@@ -15,6 +15,13 @@ successful mirror sync.
    `skopeo --all`.
 6. `WOOWTECH/Woow_HA_App_Store` imports `dnsmasq-dhcp/` during its daily sync.
 
+## Upstream workflow safety
+
+The upstream `Main CI` workflow is intentionally **disabled** in this mirror.
+It is preserved unchanged on the audit branch, but pushing that branch must not
+build or publish upstream-owned images from the WoowTech organization. Only the
+root `mirror-sync` and `image-mirror` workflows are enabled.
+
 ## Manual verification
 
 ```bash
