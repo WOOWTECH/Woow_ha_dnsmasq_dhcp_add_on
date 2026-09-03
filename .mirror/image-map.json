@@ -1,0 +1,20 @@
+{
+  "upstream_url": "https://github.com/f18m/ha-addon-dnsmasq-dhcp",
+  "upstream_branch": "main",
+  "mirror_image_prefix": "ghcr.io/woowtech/ha-mirror-",
+  "addons": [
+    {
+      "dir": "dnsmasq-dhcp",
+      "slug": "dnsmasq-dhcp",
+      "name": "Dnsmasq-DHCP",
+      "upstream_image": "ghcr.io/f18m/addon-dnsmasq-dhcp",
+      "new_image": "ghcr.io/woowtech/ha-mirror-ghcr-io-f18m-addon-dnsmasq-dhcp",
+      "version": "5.1.0",
+      "arches": [
+        "aarch64",
+        "amd64"
+      ],
+      "already_patched": false
+    }
+  ]
+}

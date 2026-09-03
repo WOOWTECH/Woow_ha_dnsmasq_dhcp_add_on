@@ -1,0 +1,92 @@
+name: mirror-sync
+
+# Daily source sync. The `upstream` branch remains an unmodified copy of the
+# upstream stable branch; `main` packages that source under dnsmasq-dhcp/ and
+# applies only the WoowTech repository/image overlay.
+
+on:
+  schedule:
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: mirror-sync
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main with full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: main
+
+      - name: Snapshot WoowTech overlay
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/overlay
+          cp -a .github .mirror README.md repository.yaml .gitignore /tmp/overlay/
+
+      - name: Load mirror configuration
+        run: |
+          set -a
+          . .mirror/config.env
+          set +a
+          echo "UPSTREAM_URL=$UPSTREAM_URL" >> "$GITHUB_ENV"
+          echo "UPSTREAM_BRANCH=$UPSTREAM_BRANCH" >> "$GITHUB_ENV"
+          echo "ADDON_DIR=$ADDON_DIR" >> "$GITHUB_ENV"
+          echo "MIRROR_IMAGE_PREFIX=$MIRROR_IMAGE_PREFIX" >> "$GITHUB_ENV"
+
+      - name: Fetch upstream source and tags
+        run: |
+          set -euo pipefail
+          git remote remove upstream 2>/dev/null || true
+          git remote add upstream "$UPSTREAM_URL"
+          git fetch upstream --tags --prune --force
+
+      - name: Update pure upstream branch and tags
+        run: |
+          set -euo pipefail
+          git branch -f upstream "upstream/$UPSTREAM_BRANCH"
+          git push origin upstream --force
+          git push origin --tags --force
+
+      - name: Rebuild main repository tree
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/upstream-src
+          mkdir -p /tmp/upstream-src
+          git archive "upstream/$UPSTREAM_BRANCH" | tar -x -C /tmp/upstream-src
+
+          find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          mkdir -p "$ADDON_DIR"
+          cp -a /tmp/upstream-src/. "$ADDON_DIR/"
+          cp -a /tmp/overlay/. .
+
+          python3 .mirror/patch-image.py
+          {
+            echo "last_sync: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            echo "upstream_url: $UPSTREAM_URL"
+            echo "upstream_branch: $UPSTREAM_BRANCH"
+            echo "upstream_commit: $(git rev-parse upstream/$UPSTREAM_BRANCH)"
+            echo "addon_dir: $ADDON_DIR"
+            echo "mirror_image_prefix: $MIRROR_IMAGE_PREFIX"
+          } > .mirror/last-sync.yaml
+
+      - name: Commit and push main
+        run: |
+          set -euo pipefail
+          git config user.email "woowtech-mirror-bot@designsmart.com.tw"
+          git config user.name "WOOWTECH Mirror Bot"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes; skipping commit."
+          else
+            git commit -m "[bot] mirror sync $(date -u +%Y-%m-%d) — ha-addon-dnsmasq-dhcp@${UPSTREAM_BRANCH}"
+          fi
+          git push origin main --force
