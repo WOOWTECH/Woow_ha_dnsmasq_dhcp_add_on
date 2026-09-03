@@ -53,8 +53,10 @@ jobs:
         run: |
           set -euo pipefail
           git branch -f upstream "upstream/$UPSTREAM_BRANCH"
-          git push origin upstream --force
-          git push origin --tags --force
+          # This dedicated branch is an exact mirror and may legitimately rewind.
+          git push origin refs/heads/upstream:refs/heads/upstream --force
+          # Upstream release tags are immutable; never rewrite published tags here.
+          git push origin --tags
 
       - name: Rebuild main repository tree
         run: |
@@ -89,4 +91,6 @@ jobs:
           else
             git commit -m "[bot] mirror sync $(date -u +%Y-%m-%d) — ha-addon-dnsmasq-dhcp@${UPSTREAM_BRANCH}"
           fi
-          git push origin main --force
+          # Concurrency protects workflow runs; a normal push also protects any
+          # concurrent human maintenance commit from being discarded.
+          git push origin main
