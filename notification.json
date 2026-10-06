@@ -1,0 +1,228 @@
+{
+  "schema": 1,
+  "repository": "WOOWTECH/Woow_ha_dnsmasq_dhcp_add_on",
+  "components": {
+    "dnsmasq-dhcp": {
+      "id": "dnsmasq-dhcp",
+      "name": "Dnsmasq-DHCP",
+      "version": "5.1.0",
+      "repository": "WOOWTECH/Woow_ha_dnsmasq_dhcp_add_on",
+      "source_sha": "c5978d62b53d573a7376fa41116e03718285ef8c",
+      "source_path": "dnsmasq-dhcp",
+      "config_file": "config.yaml",
+      "config_sha256": "sha256:2904c4f885c3f93db4b91cd29889a1b31d972586b3c890e42e9a494621081968",
+      "archive_sha256": "sha256:b60456417e5116330a532aae587ffe174a9955de1898b0bf668c1772ca0d397e",
+      "context_fingerprint": "sha256:a44e0c1a58d90cb7ee8599fcdc70c69f1a1f312b4bac1de17a1544e1e287367d",
+      "material_fingerprint": "sha256:76fe3d8a76c349f986683c5a73b71d1721dcfd360830b9d1696542fd520af526",
+      "architectures": [
+        "aarch64",
+        "amd64"
+      ],
+      "config": {
+        "description": "A DHCP/DNS server based on dnsmasq",
+        "url": "https://github.com/f18m/ha-addon-dnsmasq-dhcp-server/tree/main",
+        "version": "5.1.0",
+        "slug": "dnsmasq-dhcp",
+        "name": "Dnsmasq-DHCP",
+        "stage": "stable",
+        "arch": [
+          "aarch64",
+          "amd64"
+        ],
+        "host_network": true,
+        "image": "ghcr.io/woowtech/ha-mirror-ghcr-io-f18m-addon-dnsmasq-dhcp",
+        "init": false,
+        "ingress": true,
+        "ingress_port": 8100,
+        "panel_icon": "mdi:ip-network-outline",
+        "panel_title": "DHCP",
+        "options": {
+          "interfaces": [
+            "auto"
+          ],
+          "dhcp_server": {
+            "default_lease": "1h",
+            "address_reservation_lease": "1h",
+            "reset_dhcp_lease_database_on_reboot": false,
+            "forget_past_clients_after": "30d",
+            "log_requests": true,
+            "dns_domain": "lan",
+            "dns_servers": [
+              "0.0.0.0"
+            ],
+            "ntp_servers": [
+              "0.europe.pool.ntp.org",
+              "1.europe.pool.ntp.org",
+              "2.europe.pool.ntp.org"
+            ],
+            "dnsmasq_customizations": ""
+          },
+          "dhcp_pools": [
+            {
+              "interface": "auto",
+              "start": "192.168.1.50",
+              "end": "192.168.1.150",
+              "gateway": "192.168.1.254",
+              "netmask": "255.255.255.0"
+            }
+          ],
+          "dhcp_client_settings": [
+            {
+              "name": "important-server",
+              "description": "My important server",
+              "mac": "aa:bb:cc:dd:ee:ff",
+              "reserved_ip": "192.168.1.15",
+              "link": "http://{{ .ip }}/landing-page/for/this/host",
+              "tags": [
+                "server"
+              ],
+              "dns_aliases": [
+                "alias-for-this-device",
+                "another-alias.lan"
+              ]
+            },
+            {
+              "name": "work-laptop",
+              "description": "My laptop",
+              "mac": "dd:ee:aa:dd:bb:ee",
+              "reserved_ip": "",
+              "link": "http://{{ .ip }}/landing-page/for/this/host",
+              "tags": [
+                "laptop"
+              ],
+              "dns_aliases": [
+                "alias-for-this-friendly-device"
+              ]
+            }
+          ],
+          "dhcp_mac_address_blocklist": [
+            {
+              "mac": "aa:bb:cc:dd:ee:fa",
+              "description": "This is a blocked MAC address"
+            }
+          ],
+          "dns_server": {
+            "enable": true,
+            "port": 53,
+            "cache_size": 10000,
+            "log_requests": false,
+            "dns_domain": "lan",
+            "upstream_servers": [
+              "8.8.8.8",
+              "8.8.4.4"
+            ]
+          },
+          "dns_custom_hosts": [
+            {
+              "name": "my-custom-host",
+              "ipv4_address": "192.168.1.99",
+              "ipv6_address": ""
+            }
+          ],
+          "web_ui": {
+            "log_activity": false,
+            "port": 8976,
+            "refresh_interval_sec": 10,
+            "data_tables_num_rows": 20
+          }
+        },
+        "schema": {
+          "interfaces": [
+            "match(^([a-z][a-zA-Z0-9\\.:]*)$)"
+          ],
+          "dhcp_server": {
+            "default_lease": "str",
+            "address_reservation_lease": "str",
+            "reset_dhcp_lease_database_on_reboot": "bool",
+            "forget_past_clients_after": "str",
+            "log_requests": "bool",
+            "dns_servers": [
+              "str"
+            ],
+            "dns_domain": "str",
+            "ntp_servers": [
+              "str"
+            ],
+            "dnsmasq_customizations": "str"
+          },
+          "dhcp_pools": [
+            {
+              "interface": "match(^([a-z][a-zA-Z0-9\\.:]*)$)",
+              "start": "str",
+              "end": "str",
+              "gateway": "str",
+              "netmask": "str"
+            }
+          ],
+          "dhcp_client_settings": [
+            {
+              "name": "match(^[a-zA-Z0-9]([a-zA-Z0-9\\-]*[a-zA-Z0-9])?$)",
+              "description": "str?",
+              "mac": "match(^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$)",
+              "reserved_ip": "str?",
+              "link": "str?",
+              "tags": [
+                "str?"
+              ],
+              "dns_aliases": [
+                "str?"
+              ]
+            }
+          ],
+          "dhcp_mac_address_blocklist": [
+            {
+              "mac": "match(^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$)",
+              "description": "str?"
+            }
+          ],
+          "dns_server": {
+            "enable": "bool",
+            "port": "int",
+            "cache_size": "int",
+            "log_requests": "bool",
+            "dns_domain": "str",
+            "upstream_servers": [
+              "str"
+            ]
+          },
+          "dns_custom_hosts": [
+            {
+              "name": "match(^[a-zA-Z0-9]([a-zA-Z0-9\\-.]*[a-zA-Z0-9])?$)",
+              "ipv4_address": "str?",
+              "ipv6_address": "str?"
+            }
+          ],
+          "web_ui": {
+            "log_activity": "bool",
+            "port": "int",
+            "refresh_interval_sec": "int",
+            "data_tables_num_rows": "int"
+          }
+        },
+        "startup": "system",
+        "privileged": [
+          "NET_ADMIN"
+        ]
+      },
+      "source_build_supported": true,
+      "images": {
+        "aarch64": {
+          "reference": "ghcr.io/woowtech/ha-mirror-ghcr-io-f18m-addon-dnsmasq-dhcp:5.1.0",
+          "index_digest": "sha256:ed0000af59b550a3f176f30e5cfc8a23170ad82e213a10afcf6fdd4b19f4c996",
+          "digest": "sha256:2fdcceed13a7aaa52156439809bc11a28dacb2507979026e418fa24a93489b30",
+          "source_revision": null
+        },
+        "amd64": {
+          "reference": "ghcr.io/woowtech/ha-mirror-ghcr-io-f18m-addon-dnsmasq-dhcp:5.1.0",
+          "index_digest": "sha256:ed0000af59b550a3f176f30e5cfc8a23170ad82e213a10afcf6fdd4b19f4c996",
+          "digest": "sha256:365f3e625b8a58f27248dbdf1ec5d88099ea77a50c0135211e8d033b8f1b400f",
+          "source_revision": null
+        }
+      },
+      "delivery": "published-image",
+      "validation": "manifest+architecture-images+configured-CI",
+      "publisher_run_id": "37410166618",
+      "channel": "stable"
+    }
+  }
+}
