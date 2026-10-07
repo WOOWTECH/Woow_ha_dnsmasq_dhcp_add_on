@@ -9,7 +9,7 @@
       "name": "Dnsmasq-DHCP",
       "upstream_image": "ghcr.io/f18m/addon-dnsmasq-dhcp",
       "new_image": "ghcr.io/woowtech/ha-mirror-ghcr-io-f18m-addon-dnsmasq-dhcp",
-      "version": "5.1.0",
+      "version": "5.1.1",
       "arches": [
         "aarch64",
         "amd64"
