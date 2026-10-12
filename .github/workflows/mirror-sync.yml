@@ -26,6 +26,8 @@ permissions:
 jobs:
   sync:
     runs-on: ubuntu-latest
+    outputs:
+      sha: ${{ steps.push.outputs.sha }}
     steps:
       - name: Checkout main with full history
         uses: actions/checkout@v4
@@ -104,6 +106,7 @@ jobs:
           } > .mirror/last-sync.yaml
 
       - name: Commit and push main
+        id: push
         run: |
           set -euo pipefail
           git config user.email "woowtech-mirror-bot@designsmart.com.tw"
@@ -117,3 +120,18 @@ jobs:
           # Concurrency protects workflow runs; a normal push also protects any
           # concurrent human maintenance commit from being discarded.
           git push origin main
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+  # The App Store ships only published Releases (registry ref_policy: release).
+  # Release the commit main now points at: each add-on whose version changed gets
+  # its <slug>-v<version> Release (dnsmasq: v<version>). The images are mirrored
+  # separately; the Store waits until they are available.
+  release:
+    name: Release
+    needs: sync
+    if: needs.sync.outputs.sha != ''
+    permissions:
+      contents: write
+    uses: WOOWTECH/Woow_HA_App_Store/.github/workflows/woow-addon-release.yml@main
+    with:
+      sha: ${{ needs.sync.outputs.sha }}
