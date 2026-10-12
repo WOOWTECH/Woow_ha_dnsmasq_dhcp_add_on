@@ -7,11 +7,11 @@
       "name": "Dnsmasq-DHCP",
       "version": "5.1.1",
       "repository": "WOOWTECH/Woow_ha_dnsmasq_dhcp_add_on",
-      "source_sha": "53f349f0908c88e692c7c3606c2046c2d282ce9d",
+      "source_sha": "4b12c2b6fda5e18cc8744fb618f64134d9e739c9",
       "source_path": "dnsmasq-dhcp",
       "config_file": "config.yaml",
       "config_sha256": "sha256:67672b22e83ec182aa104a91aacf29ba2763357af160f751646a257124a2215b",
-      "archive_sha256": "sha256:17426abc629ab801bbd70f04d6fc5c4f6bf61fb1b7717c80748473c0b4791634",
+      "archive_sha256": "sha256:9d0d978bb18debc3ef25812d0b61f909096403dc25e2bb700cf3b0dffe7972c9",
       "context_fingerprint": "sha256:3dcfe30fddc24659dd6fec2fcca843147c67804f3830d7fce7280e2ef306ec0a",
       "material_fingerprint": "sha256:9bebc5137630916a168cd0ff4dcdc2e49b3c0b143ff0ab85d8866c22eb771aab",
       "architectures": [
@@ -221,7 +221,7 @@
       },
       "delivery": "published-image",
       "validation": "manifest+architecture-images+configured-CI",
-      "publisher_run_id": "37585952634",
+      "publisher_run_id": "38209723176",
       "channel": "stable"
     }
   }
