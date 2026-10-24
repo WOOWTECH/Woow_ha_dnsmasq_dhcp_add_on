@@ -1,6 +1,6 @@
-last_sync: 2026-10-23T08:32:34Z
+last_sync: 2026-10-24T08:07:29Z
 upstream_url: https://github.com/f18m/ha-addon-dnsmasq-dhcp
 upstream_branch: main
-upstream_commit: afd018adc6a13adffe5663a489138e79a69bac1a
+upstream_commit: 2bc5d4fceccff13b87834dd5321dde47abc4a7ff
 addon_dir: dnsmasq-dhcp
 mirror_image_prefix: ghcr.io/woowtech/ha-mirror-
