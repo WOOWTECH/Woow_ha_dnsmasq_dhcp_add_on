@@ -31,8 +31,11 @@ In Home Assistant, open **Settings → Add-ons → Add-on Store → ⋮ → Repo
 
 | Workflow | Schedule (UTC) | Purpose |
 |---|---:|---|
-| `mirror-sync` | daily at 03:17 | Sync source/tags, rebuild `main`, and rewrite the image URL |
-| `image-mirror` | daily at 04:47 | Copy the current upstream image to WoowTech GHCR |
+| `mirror-sync` | daily at 03:17 | Sync source, rebuild `main`, and rewrite the image URL; then image copy → upgrade comparison → Release (pipeline #91) |
+| `image-mirror` | — (called by `mirror-sync`) | Copy the current upstream image to WoowTech GHCR |
+
+A new version gets its Release only after it passes the Store's upgrade
+comparison; see `.mirror/README.md` (Release gating).
 
 The add-on image is served from:
 

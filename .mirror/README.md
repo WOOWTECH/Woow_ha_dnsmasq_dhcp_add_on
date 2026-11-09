@@ -7,13 +7,31 @@ successful mirror sync.
 ## Data flow
 
 1. `mirror-sync.yml` fetches `f18m/ha-addon-dnsmasq-dhcp` branch `main`.
-2. The exact upstream commit is force-updated onto the `upstream` branch.
+2. A snapshot of upstream's tree without `.github` is committed on top of the
+   `upstream` branch (never force-pushed).
 3. Upstream files are exported into `dnsmasq-dhcp/` on `main`.
 4. `patch-image.py` rewrites the add-on image to the WoowTech GHCR namespace
    and records the source/destination pair in `image-map.json`.
-5. `image-mirror.yml` copies the versioned image and `latest` manifest with
+5. `image-mirror.yml`, called by `mirror-sync` on the pushed commit (it has no
+   schedule of its own), copies the versioned image and `latest` manifest with
    `skopeo --all`.
-6. `WOOWTECH/Woow_HA_App_Store` imports `dnsmasq-dhcp/` during its daily sync.
+6. The Store's upgrade comparison compares a new version with the latest
+   formal Release; only if it passes does the Store's Release workflow create
+   the `v<version>` Release.
+7. `WOOWTECH/Woow_HA_App_Store` imports `dnsmasq-dhcp/` from that Release.
+
+## Release gating (pipeline #91)
+
+`mirror-sync` runs sync → image copy (`image-mirror`) → the Store's upgrade
+comparison → Release. If the comparison fails, the run fails, no Release is
+created, and the step summary says which category failed and why. Optional
+overlay files in `.mirror/dnsmasq-dhcp/` are copied into `dnsmasq-dhcp/` on
+every rebuild: `upgrade-check/` (hooks, settings) and `upgrade-notes.yaml`
+(declared breaking changes, with the migration). For an intended upstream
+breaking change, add the declaration to `.mirror/dnsmasq-dhcp/upgrade-notes.yaml`,
+commit it to `main`, and run `mirror-sync` by hand: it checks the same version
+again and, when it passes, creates the Release with the declaration in its
+notes.
 
 ## Upstream workflow safety
 
@@ -26,7 +44,7 @@ root `mirror-sync` and `image-mirror` workflows are enabled.
 
 ```bash
 gh workflow run mirror-sync.yml -R WOOWTECH/Woow_ha_dnsmasq_dhcp_add_on
-gh workflow run image-mirror.yml -R WOOWTECH/Woow_ha_dnsmasq_dhcp_add_on
+gh workflow run image-mirror.yml -R WOOWTECH/Woow_ha_dnsmasq_dhcp_add_on  # normally runs only inside mirror-sync
 gh run list -R WOOWTECH/Woow_ha_dnsmasq_dhcp_add_on --limit 5
 ```
 
