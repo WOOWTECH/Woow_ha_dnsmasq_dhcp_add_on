@@ -1,0 +1,5 @@
+#!/usr/bin/env python3
+"""升級測試 hook：在比對對象上寫入一筆租約（見 dnsmasq_upgrade.py）。"""
+import dnsmasq_upgrade
+
+dnsmasq_upgrade.main("seed")

@@ -1,0 +1,5 @@
+#!/usr/bin/env python3
+"""升級測試 hook：在新版本上透過 /ws 讀回 seed 寫的租約（見 dnsmasq_upgrade.py）。"""
+import dnsmasq_upgrade
+
+dnsmasq_upgrade.main("verify")
